@@ -1,6 +1,7 @@
 from api.extensions import db
 from uuid import uuid4
 
+
 class User(db.Model):
     __tablename__ = "users"
 
