@@ -1,5 +1,5 @@
 from flask import Flask
-from api.extensions import db, migrate
+from api.extensions import db, migrate, bcrypt
 from api.config import AppConfig
 
 
@@ -8,6 +8,7 @@ def make_app():
     app.config.from_object(AppConfig)
 
     db.init_app(app)
+    bcrypt.init_app(app)
     migrate.init_app(app)
 
     from api.routers.user_routes import user_router

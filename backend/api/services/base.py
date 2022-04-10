@@ -1,6 +1,6 @@
 from api.extensions import db
 
 
-class BaseService:
+class DatabaseAware:
     def __init__(self):
         self.db = db
