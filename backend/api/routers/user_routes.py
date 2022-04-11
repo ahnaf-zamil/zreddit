@@ -1,17 +1,23 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, session
 from api.services import user_service
 from api.validators.user_validator import (
     validate_email,
     validate_password,
     validate_username,
 )
+from api.utils.auth import login_required
+from api.models import User
 
 user_router = Blueprint("user", __name__, url_prefix="/users")
 
 
 @user_router.get("/@me")
-def get_current_user():
-    return user_service.create_user()
+@login_required
+def get_current_user(user: User):
+    user_id = session.get("user_id")
+
+    user = user_service.get_user(user_id)
+    return user.to_json(show_email=True)
 
 
 @user_router.post("/register")
@@ -20,9 +26,10 @@ def register_user():
     email = validate_email(request.json.get("email"))
     password = validate_password(request.json.get("password"))
 
-    result = user_service.create_user(username, email, password)
+    user = user_service.create_user(username, email, password)
+    session["user_id"] = user.id
 
-    return {"success": result}
+    return {"success": True}
 
 
 @user_router.post("/login")
@@ -31,7 +38,6 @@ def login_user():
     password = validate_password(request.json.get("password"))
 
     user_id = user_service.authenticate_user(email, password)
-
-    # User_id will be used to store server sided session
+    session["user_id"] = user_id
 
     return {"success": True}

@@ -1,3 +1,4 @@
+from typing import Optional
 from werkzeug.exceptions import Conflict, Unauthorized
 from api.models.user import User
 from .base import DatabaseAware
@@ -5,7 +6,7 @@ from api.extensions import bcrypt
 
 
 class UserService(DatabaseAware):
-    def create_user(self, username: str, email: str, password: str):
+    def create_user(self, username: str, email: str, password: str) -> User:
         hashed_password = bcrypt.generate_password_hash(password)
 
         existing_user = (
@@ -23,7 +24,7 @@ class UserService(DatabaseAware):
         self.db.session.add(new_user)
         self.db.session.commit()
 
-        return True
+        return new_user
 
     def authenticate_user(self, email: str, password: str):
         existing_user = User.query.filter_by(email=email).first()
@@ -35,3 +36,7 @@ class UserService(DatabaseAware):
             raise Unauthorized("Invalid credentials")
 
         return existing_user.id
+
+    def get_user(self, user_id: str) -> Optional[User]:
+        user = User.query.filter_by(id=user_id).first()
+        return user

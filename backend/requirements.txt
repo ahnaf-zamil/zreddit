@@ -4,3 +4,5 @@ flask-sqlalchemy
 flask-migrate
 python-dotenv
 flask-bcrypt
+flask-session
+redis
